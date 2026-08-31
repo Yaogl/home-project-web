@@ -6,17 +6,29 @@
           <img v-if="config.logoUrl" :src="config.logoUrl" class="brand-logo" alt="" />
           <span class="brand-name">{{ config.name || '企业官网' }}</span>
         </router-link>
-        <nav class="nav">
-          <router-link to="/">首页</router-link>
-          <router-link to="/products">产品中心</router-link>
-          <router-link to="/about">关于我们</router-link>
-          <router-link to="/news">新闻资讯</router-link>
-          <router-link to="/honors">案例荣誉</router-link>
-          <router-link to="/contact">联系我们</router-link>
-          <router-link to="/inquiry" class="nav-inquiry">询价篮 ({{ inquiryCount }})</router-link>
+        <button
+          type="button"
+          class="nav-toggle"
+          aria-label="打开菜单"
+          :aria-expanded="navOpen"
+          @click="navOpen = !navOpen"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="nav" :class="{ open: navOpen }">
+          <router-link to="/" @click="navOpen = false">首页</router-link>
+          <router-link to="/products" @click="navOpen = false">产品中心</router-link>
+          <router-link to="/about" @click="navOpen = false">关于我们</router-link>
+          <router-link to="/news" @click="navOpen = false">新闻资讯</router-link>
+          <router-link to="/honors" @click="navOpen = false">案例荣誉</router-link>
+          <router-link to="/contact" @click="navOpen = false">联系我们</router-link>
+          <router-link to="/inquiry" class="nav-inquiry" @click="navOpen = false">询价篮 ({{ inquiryCount }})</router-link>
         </nav>
         <router-link to="/inquiry" class="btn-quote">立即报价</router-link>
       </div>
+      <div v-if="navOpen" class="nav-backdrop" @click="navOpen = false"></div>
     </header>
 
     <main class="site-main" :style="mainStyle">
@@ -51,6 +63,7 @@ const config = ref({});
 const pageStyles = ref({});
 const homeModules = ref([]);
 const inquiryCount = ref(0);
+const navOpen = ref(false);
 
 const mainStyle = computed(() =>
   resolvePageStyle(pageStyles.value, routeToPageKey(route.path)),
@@ -94,5 +107,8 @@ onMounted(async () => {
   await loadHomeLayout();
 });
 
-watch(() => route.path, loadHomeLayout);
+watch(() => route.path, () => {
+  navOpen.value = false;
+  loadHomeLayout();
+});
 </script>
